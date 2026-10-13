@@ -56,6 +56,7 @@ p{margin:0}
 
 .btn{display:inline-flex;justify-content:center;align-items:center;gap:8px;border:0;border-radius:12px;padding:14px 22px;
   font-family:var(--f-head);font-weight:700;font-size:17px;cursor:pointer;background:var(--gold);color:var(--on-accent);transition:transform .15s,filter .15s}
+a.btn{text-decoration:none}
 .btn:hover{filter:brightness(1.08)}
 .btn:active{transform:scale(.98)}
 .btn[disabled]{opacity:.35;cursor:not-allowed}
@@ -131,6 +132,8 @@ textarea{min-height:76px;resize:vertical}
 .scale{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
 .scale .chip{border-radius:10px;padding:10px 0;font-family:var(--f-display);font-size:18px}
 .scale-ends{display:flex;justify-content:space-between;font-size:12.5px;color:var(--muted)}
+.consent{border:1px solid var(--gold-soft);border-radius:12px;padding:14px 16px;background:var(--ground-2);display:flex;flex-direction:column;gap:8px}
+.consent input{width:20px;height:20px;accent-color:var(--gold)}
 .note{font-size:13px;color:var(--muted);border-left:2px solid var(--gold-soft);padding-left:12px}
 
 .opt{display:block;width:100%;text-align:left;border:1px solid var(--gold-soft);background:var(--ground-2);border-radius:12px;padding:14px 16px;cursor:pointer;font-size:16px}
@@ -200,6 +203,11 @@ textarea{min-height:76px;resize:vertical}
 .pgn small{color:var(--muted);font-size:12.5px;letter-spacing:.03em}
 .pgtag{font-size:11.5px;font-family:var(--f-head);background:var(--gold);color:var(--on-accent);border-radius:999px;padding:2px 10px}
 .pgm .body{padding:0 16px 16px;display:flex;flex-direction:column;gap:8px;font-size:15px}
+.admit{display:flex;gap:12px 16px;align-items:center;flex-wrap:wrap;border:1px solid var(--gold);border-radius:14px;padding:16px;background:var(--ground-2)}
+.admit .txt{flex:1;min-width:200px;display:flex;flex-direction:column;gap:2px}
+.admit b{font-family:var(--f-head);font-size:16.5px}
+.admit .muted{font-size:14px}
+.admit-link{align-self:center;color:var(--soft);font-family:var(--f-head);font-size:15px;text-underline-offset:3px}
 .more > summary{cursor:pointer;color:var(--gold);font-family:var(--f-head);font-size:14.5px}
 .slot{border:1.5px dashed var(--gold-soft);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:8px}
 .slot .tag{align-self:flex-start;font-size:11.5px;letter-spacing:.06em;border-radius:999px;padding:2px 10px;background:var(--ground-3);color:var(--gold);font-family:var(--f-head)}
@@ -345,6 +353,19 @@ const PG = [
  {id:"RE",name:"สถาปัตยกรรม เพื่อการพัฒนาอสังหาริมทรัพย์",en:"Architecture for Real Estate Development",desc:"ผสานการออกแบบสถาปัตยกรรมเข้ากับการพัฒนาโครงการ การตลาด และความคุ้มค่าของโครงการ"},
  {id:"DBTM",name:"Design, Business and Technology Management",en:"International Program",desc:"เชื่อมการออกแบบ ธุรกิจ และเทคโนโลยีเข้าด้วยกัน ในหลักสูตรนานาชาติ"}
 ];
+/* ===== ลิงก์ข้อมูลการรับสมัครของ TDS ===== */
+const ADMISSION_URL = "https://tds.tu.ac.th/tcas70round1portfolio";
+/* ===== ลิงก์ของแอปที่ใช้ตอนกดแชร์ให้เพื่อน ===== */
+const APP_URL = "https://tds-thammasat.github.io/TDS-future/";
+const shareLink = () => (window.claude || location.protocol === "file:") ? APP_URL : location.origin + location.pathname;
+async function shareApp(btn){
+  const p = st.mind && st.skill ? predict() : null;
+  const url = shareLink();
+  const text = p ? `ฉันได้ไพ่ “${p.title}” จาก TDS ออกแบบตัวเอง ออกแบบอนาคต ลองเปิดไพ่ของเธอบ้าง` : "ลองเปิดไพ่ดูว่าความชอบของเธอจะสร้างอนาคตแบบไหน กับ TDS ออกแบบตัวเอง ออกแบบอนาคต";
+  if (navigator.share){ try { await navigator.share({title:"TDS ออกแบบตัวเอง ออกแบบอนาคต", text, url}); return; } catch(e){ if (e && e.name === "AbortError") return; } }
+  try { await navigator.clipboard.writeText(text + " " + url); btn.textContent = "คัดลอกลิงก์แล้ว ส่งให้เพื่อนได้เลย"; }
+  catch(e){ const box = document.getElementById("shareBox"); if (box){ box.hidden = false; box.querySelector("input").value = url; box.querySelector("input").select(); } }
+}
 const PG_LOGO = {"ARCH": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFIAAAAoCAYAAABtla08AAACc0lEQVR42u3by2tTQRTH8U+SKq1UpVJ8QVEQ3BRUfC1URBciiCIKikgVFRU3/TfciSAufIGg+ARdlYqooAsXvhauXCgiaClYLLWgC9HERa8QCrk3aXOTXJzfMjP3zMl3zpk7cybJjX8fU0EzcQ87padTuIxiQr8l+KR5eohDGKnUIV/h8w0YThkiXMBttCf0a9NcbccbrKgFZBcGMa9BTu6LZrxda6sHb7GqGpAboxSa22AnN1cZma2gB1gTB7I76jSnSQ7uxqMMwFyI15Nh/gO5FR8xu8lObooisyMDkTmIReUgOzHQAhDLI/NZBmDOx83yt+EAZsU88CLm7T7dFOmp0LYOV3GgBnvv8DMFP9vRW6FtC55iV278+1gpxsh7LE9pRvfgfkz7SAS7iGX4kGBvcbRlq7e6Il8KMX16kyItl2JqJNku1WivkJKfhSp8LeYF1UUBZAAZQAaQdVYpI4z+VOFrfjpVlbU4jNXRpr5WLWggjJU4Ep2cZtT4bFvCjuAJPk8H5KuMRNReE3XVNPQY26aa2l24kQGAOfSlCHE4ysgpr5HncTADIPtwPUX7O8pPUrWA7MadDEDMR+vhtRTHGJx8ZK0F5EXsz0AkHo0KHlKOxtNTAdkfLdqtrAJO4EqDxutXVp1KAlmK1ppzGYjE47jU4DFvmbgoTLyd68QvnExhA70+iqB6aajO9soZnI1pf46lSSB/4G5Kszla5y8+gC8p+NmNMwnZ2xHO2qFoEUAGkEEBZAAZQAaQQQFkABlABgWQ/yfIYqs72Ca+AvM1xbFfJow9WgZwBMdUvhb9jW8p+Tlu4h8NcT99HAqpXSf9BaBRYOwdiKaaAAAAAElFTkSuQmCC", "INT": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFMAAAAoCAYAAACCV8YCAAACyklEQVR42u3bOWhUQRzH8c+um3ihYrDwxAsRUdBGsBAbRSwE8QTBRvDATjwqLQRNZyEiamuheFWKiqCFIAiCaKOFCjbigQdJvIMmFjvBEJLddd97+3Y371e9ZR7/mfm+/8z/P8fmujo7epXWHZzEDfQMKJuFV5LTO0xFbwXv7sHpBNtyF9tCmwZVvgIjq3AtwGwdUDZCssojV+adNlxIGCSsxCMsjgKzT2twQP3pFLbWqK6peBKA5qLAhHYcGsRD01AbLtUQZH/dGsxD81UYOoaDdQDzDLakVPcUPMaSqDD7gB5KqSOTcDlFkAM9dHJUmH1AR6bQgbPYXCfz9WSc6/tRwNPw3FKFsb0hNfoV8cMMpef90qLRoeEbS7z/MrQlbrVi3hBlq3Ebm3JdnR1RKpkdotuGkIclqbkBVrlo+zaBuifiQ5lUcGFUb8pjPG5iWh0MuxEJ2i2X7/bkYxwGr4LLD1vFOc+14DrGZTDj89AuHMaoDGY8Oop9ww1mIUHb7SFleFRH/W3BzCqWw+MrcbxCwo2/ivnoThniFBxR3EIb04ieSXG/c0LI0dLUZSxv1DmzFrlfJZqOe7UAWSuYaeo8VjR6NE9bM/GgliCbGeZFLGuWPDMtTcPDNEA2I8wTWNqMSXsa2o43CdhtU8GRdrPB/Br2BuJWq+KdgfxwTo2yOTODmakmMHMZzMz7q0qNdobnajYkxlYQ5baj8z/t9uAPPuFKo8DMVXClsJS6MScs35LYmfmgeNDfo7Kj3hl4nUA7JuF9GadZEMcQ7MJ6yZxX9zbSMM/H1OGPWIT7WTSPR5+xLoMZL9C1Gcz4dCPklseGG8yCfxfeq7kF9wa/hyhrD1B3RfhoL/oFoe8hyI0cIjB1S+YGnGD3mdJ/VvhZwI4IeeaPEh34ieOKm7XV6ku/xn/C7hIrql50JATzG/YrfUvlXbY2j1F/Af8jfoF5gVG9AAAAAElFTkSuQmCC", "LA": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFEAAAAoCAYAAACGohY/AAABwUlEQVR42u3av0tVYRjA8c+tyAapxTKXHBsaiqDBlJaGi3NOQmC0VtTamP9AYv4HgYiViRAhREtTEGhDiBC4NVTgLwINug3ewYJ7u/bccy/q850OHM5znvM97/s+7/ueU1pfW62ozTLOaz+9WCkw/juM4yW293rxkeD5VnGs4PgDmMIbnG62xMPGABbRnRJj9GAmJcbp20trTIm1mWlUZEqs3xo/4my7q14rWfmf6UkDPMQjfDsMEq/iSwFxu/EZt/HsoHfnowXGPolpXMwxMc4ChlJinGlcTolxPuA9OlNijCsYTYlx7qOcEuPMpsQ4HSmxCaTElJgSU2Lyp8T51BCXOJYa4hJf4UGqiI+Jj3EzdcQLy9PqWjAJVucxDKeW+BRnEvdSTXyeOF5tkb9S0b+p97VvEpsYwYk25Pbdzlb8vpYIc7iEWZxrcW5f8Xw/9IZGln0LGGxDbpWDtnb+hLs5+sU3IJ7gRiqLSYQXuJPaYhJhAqVU13h1rkc/buEaugooBMu7Yv6w87NSR437bGOrIEdbWMKZWs9YWl9bjdygCxdwqoDkN/C2enwc5To9oILX+FlQQ7tefYFN687JX/wGc95GgCco90EAAAAASUVORK5CYII=", "URB": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFIAAAAoCAYAAABtla08AAAB+UlEQVR42u3aO2hUQRTG8d/GDfjsxUKwsTGddqJgKVqL+EJBwaAQRdJZaGGlCBaiqBhQAiKWVtYiWIgiGLEyIFiJj1ipuGtx98IS9u5mc3dccvd81cBcDnP/fHNmzszUFn58byrWPLZIo5143qX/Mi612qvxBesMRz+xG2+KPhjrEWBVwsH1ir14bHXD0wa8xtEiZmNC/egBDgfIwcE8glqALK+Hi51ZDyalYMIsmuHIATmzao78nCjuph4wf1UJ5EVcSRR7Foe69E9XaWrXhhi7ETlyQAqQATJAVlKjtiFfg/V9GqiBtQEy+8eDOIftCeJ/xPFRADmFawnj78eHKufIcZxPCHEe2zBX9Vp7CtcTxt+H91Veteu4gKsJnTiRO7HKIP9HTnxX5X1kA7sS58SJThBzkK8qAnIjniZ24ly3fHIL9yoA8k/LkSlOgb7iU6/EfL+1UZ1c4SC/4e0wa+0mzmImKubyhxYNnMTtQFIOZA7zTDizPMh2Z94JNP1XAZ32Y5Oyh0t7AtHyQeYwT7SqhB3tpdAAtXUUQOYwb+CA7L3LePhueSBzmI/wF48D19IXmyI9wd3AVR5kE6dlLw5CJUDm0/wYngW2ciBzmHvDmeVBtjtzGguBcGmrdjeYN2V3FpsTje1lW/s3TsnupIv0YqU5MtRB/wCTtVk+Kbzf/AAAAABJRU5ErkJggg==", "RE": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFIAAAAoCAYAAABtla08AAACfElEQVR42u3aO2jVcBTH8c9tb7VYH6C4FKRVcZAiCi4OgqODToqIOOjS6iDVURFUfICILio4aFsEFR+DIBRctKsuguKg+EIEX6DWglhobR1MoUPvvUlu05tc84NsJ/+cfHNyHv+kMPRzcFzt1I1LGK1gtxDfEvSjH+cwEHeBBrXVedxCcwW7xoT92ISHuBE8tMyBhC24HwLmTGgHLmYVJGzAtRTBXJpVkLA1RZH5NirMNIGciMzrKKbAl360ZxXkRM7cmwI/VuJ1ALNQyTjMk/+YkKPzgmMqXcBv9ERY7zuGE/DzNA7gczmjQoU+8h2WJQRyY5ATS+kVOjCCxfhaYb1VeJ6An014hjPoS9urXQhx7aiDQpL30oxetGUpR6ZRDZMKUFsOsnp1BClnSQ5yenLmAxydXCxzkPG0AsdwNkr7E6aNmRPzvKyrC4/QVw3Iw9gzVb6YBn3C9qD1Sbt6MRAXZDNOJujcZjzNUGQuj5Mj1+BNgk4dxJMYfWQtNbsYIxL70ZqQQ524kuVGM0oktiboz2rMzSLIYgTg9xKGCPswhv31FpHjgU1vQtV5KnVjW72BnIWb2DXDft3G2np6tRtxHKcSuPZ65T80XQ3y8mg9gByWzB5fIUS+bRJiZzqLVft/VQEtOcjq1YZFOcjpGVfzV7vaGRqHQtiNF3NWJdURodD+ygrIEf++aC4oY9MeVPpq1YKd2B3hnJdZATmo/GfhBvzA/Br4tg5f6iVH1uo+OvE4LzbVqSvYgwg12eQqDfFy3v5UD7En6qydq0Ik5iCj6W5QVEr+HVfEiTILJPVL3zheVLj2B/wJud4YjoSZiWNoCHfwPh8RZ0B/AUgrZdq96mH4AAAAAElFTkSuQmCC", "DBTM": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFMAAABTCAYAAADjsjsAAAAFRUlEQVR42u2dXWwUVRTHf7tMtRCLVDBx/UCKq8agIgpSPyKJNaKiifgiPqgPGu2LmpCoLeAXfsZUE6M+GR9EMUrkQ+VBjRpDAIP4EYoaJcRUY+RBm7SlHyBr14d7NtmQnZntzLmd2en9J4SH2blz5zfnnnvOufemuaHBgTL29BbQA/yo0NbZQB/Jai3wnN/FvOWH3w3sB+5RaCtP8noW+AQoJNnB+8mOlgMbkoS5BNgtQzULuq6WdU7m0LkCeC9DFvp20n6oHfg6IxbaAXxebaFJOPV24P2MWGdHtYXm6giNDljoRE5mxfXAP3Xe0wb8FvKbPuBfS+Cagbk+174AVnp1gDzf4pd9FXhAsb0rgUOW+hoU53YA88OGuW03sALYq+hDPYt9PSHtgXAZWAxszoIDzaekH5cBz6ec1XijwAToAr4F5jnL1LPQDxxMXaB7gdNS1q//kpz94mgx0Ak8qdzuqcAiYEYEfzk35DdHvBSPmuWKMC+VCe56C/08BqwCDqQZ5jxxQ+Mx27kc2GOxn7cDW9PqMytqUujfGcB2iz70tgrItMPU0EbxkzZ0RzXILMM8E/gKWGbxGauA6VMB5kbLIJEh/mU10KzBPB3YCVwzSc9rBzZVQi0vYzBvAHrln6bKwGyZuY/XzZiy34KswXwT+NNS20UfmAAzgdlJD3Pt5+emam6eB05uIKsvpxnmIqA1Sz4mn+BzX89aPJYUzEeApSG/GVfIyzMN0wMep74lioGUwQzrS8nDrF/nAl7oXoVZshk4F7iF+pcldirDmI6pIM2PEF+XJSEI0ogH3Bjwg2sxC+xJSNOnzpJcfaGlvi4D+vIpjNnGMIXh75Ta6wD+sAjyLmBHWtPJlcBnSm21AB9zXHVH2SJ3pLHQMSa59aeKIDdZBHlnNcg0wfwIuEgJ5EzgGeBv+Tg29BrwTq1QJWk9LeGShmbIB7nAYn+vBnb5xX1B4cAgcFA53ssBo9LuBrHKenQE+AmzNlRLR4GHgGnY2QYJZrV0l++LDQ0O4NTY6WQm5QXElOUJDFsbsnnYy8b7lj3M3p5pNfLQYeB3CVmC0sQFNe7X0DDws3KbczB7mGptXB0Ffgm5vxWzTebEGrx6Pcw2Pj8dxJwy2+1z/SrMiQMb6pcXLym1t04iBz8NStpZS03AarnfbwJcGOYzizJ7rW9gV9YGfBMCkoCIZZZkUS8EgATI1RtnPiYW0ohQN2Oq+lELJN/LB1GdzZ8i4ERrSvViDJCtmO0vbfXeMNEMqFv+X9MAQ3sLcEnE+2+SoT2h0DFKnNmN/iZU7bBnawyQxSgg4wTtT4hDTtsaTRHYR7TaZRlzLunXqFw8CQmi3NyJKXP1U8eBowiKUhPowSxLHI7wvEPAy8BIQEzdFAazEDHoHsecuy7J0NdOTUsTgFkE3sVUvaNsj2mRD9HpkwmNA+cBP4TBHIuZpTwolrAuYR95oVjVcIRZew9wUohFj9gudFTy1LUShiThI3sFZBSdAmwDztIsdGjoYRmaaybRIrdJbSAqyH2YXcYq0vZz3cBLk2SR+2OC/FATpLZlVrQaczamK6UWOUdcQ0G7Y7aKw49i75RuTwyQzZizmQUbHbNZae9C//zjUrH8qHoFiwcHbC9b3Krskt6Icf85wH02X9Y2zCWKbRUwa+tRdbHtWdE2TC9FbXmNDnNKycF0MB1MB9PJwXQwHUwnB9PBdDAdTCcH08F0MJ0cTAfTwXQwnRzMlCjuItMY5vyMXzv9in0tAUOYjQS1dJjgYy6jmD/VUKb2wai/Qp5/TN6nxef60f8B1B/o8V4YPwcAAAAASUVORK5CYII="};
 /* น้ำหนักความเชื่อมโยง ไพ่ → สาขา (ร่างแรก ให้ทีมหลักสูตรปรับได้) */
 const PW = {
@@ -393,7 +414,7 @@ const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt
 const rid = (n) => { const a="ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; let s=""; const r=crypto.getRandomValues(new Uint32Array(n)); for(const x of r) s+=a[x%a.length]; return s; };
 
 /* ================= STATE ================= */
-const fresh = () => ({screen:"intro",reg:{nick:"",grade:"",school:"",know:"",interest:[],scale:0},
+const fresh = () => ({screen:"intro",reg:{nick:"",grade:"",school:"",know:"",interest:[],scale:0,consent:false},
   code:"",main:null,mix:null,q1:null,q2:null,mind:null,mindRule:"",pick:null,skill:null,
   opened:{paths:[],programs:[]},confirm:{fit:"",path:"",prog:[],scale:0,next:[]},
   contact:{want:false,value:"",news:false},roundNo:1,roundId:"",resultCode:"",hideNick:false,history:[]});
@@ -412,7 +433,7 @@ const saveLocal = (r) => { try { const a = loadRounds().filter(x => x.round_id !
 let dbFailed = false;
 /* ===== Google Sheet (standalone web version) =====
    วาง URL ของ Apps Script Web App (ลงท้ายด้วย /exec) ระหว่างเครื่องหมายคำพูดด้านล่าง */
-const SHEET_URL = "";
+const SHEET_URL = "https://script.google.com/macros/s/AKfycby3z4J1k3kuhwOP9x103R4kRDqtkwLwfC3ckV8lqGNIc_XAwWIJ0rBDVmuH8l6wsY_6/exec";
 const SENT = new Set();
 function sendToSheet(r){
   if (!SHEET_URL || !st.roundId || SENT.has(r.round_id)) return;
@@ -499,7 +520,10 @@ reg(){
     <div class="field"><span class="lab">อยากรู้จักการเรียนที่ TDS แค่ไหน</span>
       <div class="scale">${[1,2,3,4,5].map(n=>`<button type="button" class="chip ${r.scale===n?"on":""}" data-act="reg" data-k="scale" data-id="${n}">${n}</button>`).join("")}</div>
       <div class="scale-ends"><span>1 ยังไม่ได้คิดถึงเลย</span><span>5 อยากรู้มากที่สุด</span></div></div>
-    <p class="note">เราใช้ข้อมูลนี้เพื่อปรับคำอธิบายผลให้เหมาะกับคุณ และเพื่อให้คณะเข้าใจความสนใจของนักเรียนในภาพรวม ยังไม่ขอช่องทางติดต่อในขั้นนี้ · <u>รายละเอียดการเก็บข้อมูล</u> (คณะต้องตรวจสอบข้อความก่อนใช้งานจริง)</p>
+    <div class="consent"><label class="row" style="gap:10px;align-items:flex-start;cursor:pointer;flex-wrap:nowrap"><input type="checkbox" id="consent" data-in="consent" ${r.consent?"checked":""} style="margin-top:5px;flex:none">
+      <span>อนุญาตให้คณะนำคำตอบในเกมนี้ไปใช้ปรับปรุงหลักสูตรและกิจกรรมสำหรับนักเรียน โดยไม่ระบุตัวตน <span class="muted">(ไม่บังคับ)</span></span></label>
+      <p class="muted" style="font-size:13.5px">ถ้าไม่อนุญาต คุณยังเล่นได้ครบทุกขั้น คณะจะนับเฉพาะจำนวนผู้เล่นและไพ่ที่เลือก โดยไม่เก็บชื่อโรงเรียนหรือรหัสผู้เล่น ชื่อเล่นใช้แสดงบนไพ่ของคุณเท่านั้น ไม่ถูกส่งไปที่คณะ</p></div>
+    <p class="note">ยังไม่ขอช่องทางติดต่อในขั้นนี้ · ข้อความแจ้งการเก็บข้อมูลฉบับนี้เป็นร่าง ต้องให้ฝ่ายกฎหมายของมหาวิทยาลัยตรวจก่อนใช้งานจริง</p>
     <button class="btn" data-act="startGame" ${ok?"":"disabled"}>ไปเลือกไพ่</button>
   </section>`;
 },
@@ -588,7 +612,7 @@ result(){
     <div class="sec"><h3>สาขาที่ TDS ที่ใกล้กับไพ่ของคุณ</h3>
       <div class="tags">${p.programs.slice(0,3).map(x=>`<span>${x.name}</span>`).join("")}</div>
       <p class="muted" style="font-size:13.5px">ดูเหตุผลที่จับคู่และสาขาทั้งหมดได้ในหน้าถัดไป</p></div>
-    <div><button class="btn" data-act="go" data-id="tds">ไปดูว่าที่ TDS ลองทำได้อย่างไร</button></div>
+    <div><button class="btn" data-act="go" data-id="tds">ดูสาขาที่ TDS ที่เหมาะกับคุณ</button></div>
   </section>`;
 },
 tds(){
@@ -600,11 +624,10 @@ tds(){
   const pgItem = (x,k) => `<details class="pgm" data-pg="${x.id}"><summary>
       <img class="pglogo ${x.id==="DBTM"?"sq":""}" src="${PG_LOGO[x.id]}" alt=""><span class="pgn"><b>${x.name}</b><small>${x.en}</small></span>${k===0?`<span class="pgtag">ใกล้ไพ่ของคุณที่สุด</span>`:""}${st.reg.interest.includes(x.id)?`<span class="pgtag" style="background:var(--ground-3);color:var(--gold)">คุณสนใจก่อนเล่น</span>`:""}</summary>
       <div class="body"><p>${x.desc}</p>${x.from.length?`<p class="muted" style="font-size:14px">เชื่อมกับไพ่: ${x.from.join(" · ")}</p>`:""}
-      <p class="muted" style="font-size:13px">ช่องเตรียมเนื้อหา: ตัวอย่างรายวิชา ผลงานในสาขา และลิงก์หน้าหลักสูตร</p></div></details>`;
+</div></details>`;
   return `<section class="screen">
-    <div class="stack"><span class="eyebrow">เชื่อมกับ TDS</span><h2>ที่ TDS คุณจะลองพัฒนาความสนใจนี้อย่างไร?</h2><p class="muted">${lead}</p></div>
-    <div class="stack" style="gap:10px"><h3>ดูเส้นทางการเรียน</h3>
-      <p class="muted" style="font-size:14.5px">สาขาที่ใกล้กับไพ่ของคุณ จัดลำดับจากความสนใจหลัก ความสนใจที่ผสม และทักษะที่เลือก</p>
+    <div class="stack"><span class="eyebrow">เชื่อมกับ TDS</span><h2>สาขาที่ TDS ที่เหมาะกับคุณ</h2><p class="muted">${lead}</p></div>
+    <div class="stack" style="gap:10px">      <p class="muted" style="font-size:14.5px">สาขาที่ใกล้กับไพ่ของคุณ จัดลำดับจากความสนใจหลัก ความสนใจที่ผสม และทักษะที่เลือก</p>
       ${top.map(pgItem).join("")}
       <details class="more"><summary>ดูสาขาอื่นของคณะ (${rest.length})</summary><div class="stack" style="gap:10px;margin-top:10px">${rest.map((x)=>pgItem(x,1)).join("")}</div></details>
     </div>
@@ -652,9 +675,12 @@ share(){
     <label class="row" style="gap:10px;justify-content:center;cursor:pointer"><input type="checkbox" id="hn" data-in="hide" ${st.hideNick?"checked":""}> ซ่อนชื่อเล่นบนภาพ</label>
     <p class="note">ภาพแชร์ไม่แสดงโรงเรียนหรือช่องทางติดต่อ สำหรับต้นแบบนี้ ให้แคปหน้าจอเพื่อบันทึกภาพไพ่</p>
     <div class="row" style="justify-content:center">
+      <button class="btn" data-act="share">ชวนเพื่อนมาเปิดไพ่</button>
       <button class="btn line" data-act="go" data-id="result">เปิดผลส่วนตัว</button>
-      <button class="btn" data-act="newRound">เล่นกับความสนใจอีกชุด</button>
+      <button class="btn line" data-act="newRound">เล่นกับความสนใจอีกชุด</button>
       <button class="btn line" data-act="restart">ผู้เล่นคนถัดไป</button></div>
+    <a class="admit-link" href="${ADMISSION_URL}" target="_blank" rel="noopener" data-admit="share">ดูข้อมูลการรับสมัคร TDS ↗</a>
+    <div id="shareBox" class="field" hidden><label for="shareUrl">คัดลอกลิงก์นี้ส่งให้เพื่อน</label><input id="shareUrl" type="text" readonly></div>
   </section>`;
 }
 };
@@ -682,15 +708,24 @@ function finalizePrediction(){ if (!st.roundId){ st.roundId = "R-"+rid(10); st.r
 
 /* ================= RECORD ================= */
 function record(){
+  const r = recordFull();
+  if (st.reg.consent) return r;
+  /* ไม่อนุญาต: ตัดข้อมูลที่ชี้ตัวคนได้ออก เหลือเฉพาะข้อมูลนิรนาม */
+  r.player_code = ""; r.previous_rounds = []; r.round_no = 1;
+  r.pre_play = {...r.pre_play, school: ""};
+  return r;
+}
+function recordFull(){
   const p = st.mind ? predict() : null;
   return {
     round_id: st.roundId || "(ยังไม่เปิดผล)", round_no: st.roundNo, player_code: st.code, source_event: getEvent(), content_version: CONTENT_VERSION,
+    consent_research: st.reg.consent ? "yes" : "no",
     pre_play: {grade: st.reg.grade, school: st.reg.school, knew_tds: st.reg.know, interest: st.reg.interest, want_to_know_tds: st.reg.scale},
     self_selected: {topic_main: st.main, topic_mix: st.mix, scenario_answers: [st.q1, st.q2], mindset: st.mind, mindset_rule: st.mindRule, skill: st.skill},
     system_proposed: p ? {title: p.title, image_group: p.group, paths: p.paths.map(x=>x.t), programs_ranked: p.programs.filter(x=>x.score>0).slice(0,3).map(x=>x.id)} : null,
     confirmed_after: {fit: st.confirm.fit, path_interest: st.confirm.path, program_interest: st.confirm.prog,want_to_know_tds_after: st.confirm.scale, next_actions: st.confirm.next,
       contact_requested: st.contact.want, contact: st.contact.value ? "[ซ่อน · เข้าถึงเฉพาะผู้รับผิดชอบ]" : "", newsletter_opt_in: st.contact.news},
-    engagement: {paths_opened: st.opened.paths, programs_opened: st.opened.programs},
+    engagement: {paths_opened: st.opened.paths, programs_opened: st.opened.programs, admission_link_clicked: st.opened.admission||[]},
     previous_rounds: st.history.map(h=>h.round_id)
   };
 }
@@ -729,6 +764,7 @@ document.addEventListener("click", e => {
   if (act === "restart"){ st = fresh(); return go("intro"); }
   if (act === "closeStaff"){ if (el.classList.contains("drawer") && e.target !== el) return; document.getElementById("drawer").innerHTML = ""; return; }
   if (act === "xlsx") return exportXlsx();
+  if (act === "share") return shareApp(el);
   if (act === "clearLocal"){ try{ localStorage.removeItem(LS); }catch(e){} return openStaff(); }
 });
 document.addEventListener("input", e => {
@@ -744,8 +780,10 @@ document.addEventListener("change", e => {
   if (k==="sound"){ sound = e.target.checked; return; }
   if (k==="cwant"){ st.contact.want = e.target.checked; return render(); }
   if (k==="cnews"){ st.contact.news = e.target.checked; return; }
+  if (k==="consent"){ st.reg.consent = e.target.checked; return; }
   if (k==="hide"){ st.hideNick = e.target.checked; return render(); }
 });
+document.addEventListener("click", e => { const a = e.target.closest("[data-admit]"); if (a){ st.opened.admission = st.opened.admission||[]; if(!st.opened.admission.includes(a.dataset.admit)) st.opened.admission.push(a.dataset.admit); } });
 document.addEventListener("toggle", e => {
   const d = e.target; if (!d.matches || !d.open) return;
   if (d.matches("details.pgm")){ const id = d.dataset.pg; if (!st.opened.programs.includes(id)) st.opened.programs.push(id); return; }
@@ -804,7 +842,7 @@ function flat(x){
   const before=+pp.want_to_know_tds||null, after=+ca.want_to_know_tds_after||null;
   const pre = Array.isArray(pp.interest)?pp.interest:[], post = ca.program_interest||[];
   const row = {
-    round_id:x.round_id, saved_at:x.saved_at||"", event:x.source_event||"", player_code:x.player_code||"", round_no:x.round_no||1, content_version:x.content_version||"",
+    round_id:x.round_id, saved_at:x.saved_at||"", event:x.source_event||"", consent_research:x.consent_research||"", player_code:x.player_code||"", round_no:x.round_no||1, content_version:x.content_version||"",
     grade:pp.grade||"", school:pp.school||"", knew_tds:pp.knew_tds||"",
     interest_before:pre.map(pgName).join(", "), want_to_know_before:before,
     topic_main:ss.topic_main||"", topic_main_name:nm(T,ss.topic_main), topic_mix:ss.topic_mix||"", topic_mix_name:nm(T,ss.topic_mix),
@@ -816,7 +854,7 @@ function flat(x){
     fit:ca.fit||"", path_interest:ca.path_interest||"", program_interest_after:post.map(pgName).join(", "),
     want_to_know_after:after, want_to_know_change:(before&&after)?after-before:null,
     next_actions:J(ca.next_actions), contact_requested:ca.contact_requested?"yes":"no", newsletter:ca.newsletter_opt_in?"yes":"no",
-    paths_opened:J(en.paths_opened), programs_opened:J((en.programs_opened||[]).map(pgName)),
+    paths_opened:J(en.paths_opened), programs_opened:J((en.programs_opened||[]).map(pgName)), admission_link_clicked:(en.admission_link_clicked||[]).length?"yes":"no",
     previous_rounds:J(x.previous_rounds)
   };
   PG.forEach(p=>{ row["before_"+p.id]=pre.includes(p.id)?1:0; row["after_"+p.id]=post.includes(p.id)?1:0; });
@@ -840,6 +878,7 @@ async function exportXlsx(){
     {group:"fit",code:"high / some / no",label:"ตรงมาก / บางส่วน / ยังไม่ตรง"},
     {group:"mindset_rule",code:"match / tie-chosen / changed",label:"คำตอบตรงกันทั้งสองข้อ / เลือกจากสองใบ / เปลี่ยนเอง"},
     {group:"next_actions",code:"workshop / studio / senior / program / none",label:"Workshop / ดูสตูดิโอ / คุยรุ่นพี่ / ดูหลักสูตร / ยังไม่เลือก"},
+    {group:"consent_research",code:"yes / no",label:"อนุญาตให้ใช้คำตอบพัฒนาหลักสูตร / ไม่อนุญาต (แถว no ไม่มีโรงเรียนและรหัสผู้เล่น ใช้ได้เฉพาะนับจำนวนรวม)"},
     {group:"want_to_know",code:"1–5",label:"1 ยังไม่ได้คิดถึงเลย – 5 อยากรู้มากที่สุด"},
     {group:"before_/after_ columns",code:"0 / 1",label:"สนใจสาขานั้นก่อนเล่น / หลังเห็นผล (1 = เลือก)"}
   ];
